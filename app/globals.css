@@ -1,0 +1,255 @@
+@import "tailwindcss";
+
+/*
+  Toolbeat design tokens (see docs/DESIGN.md).
+  Change a color here and it updates everywhere.
+*/
+:root {
+  --background: #fbfbfa;
+  --surface: #ffffff;
+  --ink: #0e1114;
+  --ink-2: #3d444b;
+  --muted: #5b636b;
+  --subtle: #8a9199;
+  --line: #e3e5e7;
+  --line-soft: #ecedee;
+  --wash: #f6f7f7;
+  --signal: #0f7c70;
+  --signal-on-dark: #5fd3c1;
+  --pass-bg: #e4f3ef;
+  --fail: #b4441c;
+  --fail-bg: #fbeae2;
+  --skip-bg: #f0f1f2;
+
+  /* Motion: fast start, gentle settle */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-wash: var(--wash);
+  --color-signal: var(--signal);
+  --color-signal-on-dark: var(--signal-on-dark);
+  --color-pass-bg: var(--pass-bg);
+  --color-fail: var(--fail);
+  --color-fail-bg: var(--fail-bg);
+  --color-skip-bg: var(--skip-bg);
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --ease-out-soft: var(--ease-out);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--pass-bg);
+}
+
+input::placeholder {
+  color: var(--subtle);
+}
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+/* Buttons shrink a little when pressed */
+.press {
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.press:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .press:hover {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.15) inset,
+      0 6px 16px -6px rgba(14, 17, 20, 0.45);
+  }
+  .ghost:hover {
+    background: var(--skip-bg);
+  }
+}
+.ghost {
+  transition:
+    background-color 160ms ease,
+    transform 160ms var(--ease-out);
+}
+.ghost:active {
+  transform: scale(0.97);
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  80%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.row-in {
+  animation: row-in 420ms var(--ease-out) both;
+}
+.hero-in {
+  animation: hero-in 700ms var(--ease-out) both;
+}
+.d1 {
+  animation-delay: 60ms;
+}
+.d2 {
+  animation-delay: 140ms;
+}
+.d3 {
+  animation-delay: 220ms;
+}
+.spin {
+  animation: spin 700ms linear infinite;
+}
+.ping {
+  animation: ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+/* Reduced motion: no movement or blur, just a short fade. */
+@media (prefers-reduced-motion: reduce) {
+  .row-in,
+  .hero-in {
+    animation: fade-in 200ms ease both;
+  }
+  .ping {
+    animation: none;
+  }
+  .spin {
+    animation-duration: 2s;
+  }
+  .press:active,
+  .ghost:active {
+    transform: none;
+  }
+}
+
+/* Long-form text on docs pages */
+.prose-docs h2 {
+  margin: 48px 0 12px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.prose-docs h3 {
+  margin: 32px 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.prose-docs p,
+.prose-docs ul,
+.prose-docs ol {
+  margin: 0 0 16px;
+  color: var(--ink-2);
+}
+.prose-docs ul {
+  list-style: disc;
+  padding-left: 22px;
+}
+.prose-docs ol {
+  list-style: decimal;
+  padding-left: 22px;
+}
+.prose-docs li {
+  margin: 4px 0;
+}
+.prose-docs a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line);
+  transition: text-decoration-color 160ms ease;
+}
+.prose-docs a:hover {
+  text-decoration-color: var(--signal);
+}
+.prose-docs code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--wash);
+  border: 1px solid var(--line-soft);
+  border-radius: 6px;
+  padding: 1px 5px;
+}
+.prose-docs pre {
+  margin: 0 0 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  background: var(--wash);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  color: var(--ink-2);
+}
+.prose-docs pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}

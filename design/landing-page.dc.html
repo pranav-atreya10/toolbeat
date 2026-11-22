@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Toolbeat: is your MCP server working?</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FBFBFA;-webkit-font-smoothing:antialiased}
+a{color:#0E1114}a:hover{color:#0F7C70}
+input::placeholder{color:#8A9199}
+input:focus{outline:none;border-color:#0E1114 !important;box-shadow:0 0 0 4px rgba(14,17,20,.08)}
+button:focus-visible,a:focus-visible{outline:2px solid #0F7C70;outline-offset:3px}
+.press{transition:transform 160ms cubic-bezier(.23,1,.32,1),background-color 160ms ease,box-shadow 160ms ease}
+.press:active{transform:scale(.97)}
+.press:hover{box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 6px 16px -6px rgba(14,17,20,.45)}
+.ghost{transition:background-color 160ms ease,transform 160ms cubic-bezier(.23,1,.32,1)}
+.ghost:hover{background:#F0F1F2}
+.ghost:active{transform:scale(.97)}
+@keyframes rowIn{from{opacity:0;transform:translateY(6px);filter:blur(4px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes heroIn{from{opacity:0;transform:translateY(10px);filter:blur(6px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ping{0%{transform:scale(1);opacity:.5}80%,100%{transform:scale(2.6);opacity:0}}
+.row-in{animation:rowIn 420ms cubic-bezier(.23,1,.32,1) both}
+.hero-in{animation:heroIn 700ms cubic-bezier(.23,1,.32,1) both}
+.d1{animation-delay:60ms}.d2{animation-delay:140ms}.d3{animation-delay:220ms}.d4{animation-delay:320ms}
+.spin{animation:spin 700ms linear infinite}
+.ping{animation:ping 1.6s cubic-bezier(0,0,.2,1) infinite}
+@media (prefers-reduced-motion: reduce){.row-in,.hero-in,.ping{animation:none}.spin{animation-duration:2s}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #FBFBFA; color: #0E1114; font-family: Geist, Inter, system-ui, sans-serif; font-size: 16px; line-height: 1.55">
+
+<div style="position: sticky; top: 0; z-index: 10; background: rgba(251,251,250,.82); backdrop-filter: saturate(180%) blur(14px); -webkit-backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #ECEDEE">
+<nav style="max-width: 1120px; margin: 0 auto; padding: 14px 24px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; gap: 16px">
+<a href="#top" style="display: flex; align-items: center; gap: 9px; text-decoration: none; color: #0E1114">
+<svg width="28" height="18" viewBox="0 0 88 56" aria-hidden="true"><path d="M22.00 56.00 L35.35 27.25 L24.35 3.56 L0.00 56.00Z" fill="#0E1114"></path><path d="M48.00 0.00 L26.00 0.00 L50.35 52.44 L61.38 28.81Z" fill="#0E1114"></path><path d="M52.00 56.00 L74.00 56.00 L88.00 26.00 L66.00 26.00Z" fill="#0E1114"></path></svg>
+<span style="font-weight: 600; font-size: 17px; letter-spacing: -0.02em">toolbeat</span>
+</a>
+<div style="display: flex; align-items: center; gap: 6px">
+<a href="#why" class="ghost" style="font-size: 14px; font-weight: 500; text-decoration: none; padding: 8px 12px; border-radius: 8px; color: #3D444B">How it works</a>
+<a href="#alerts" class="press" style="font-size: 14px; font-weight: 500; text-decoration: none; padding: 8px 14px; border-radius: 8px; background: #0E1114; color: #FFFFFF">Get alerts</a>
+</div>
+</nav>
+</div>
+
+<main id="top" style="max-width: 1120px; margin: 0 auto; padding: 0 24px; box-sizing: border-box">
+
+<section style="display: flex; flex-wrap: wrap; gap: 56px; align-items: center; padding: 96px 0 104px">
+<div style="flex: 1 1 420px; min-width: 0">
+<h1 class="hero-in" style="margin: 0; font-weight: 600; font-size: clamp(40px, 5.4vw, 62px); line-height: 1.02; letter-spacing: -0.045em; max-width: 560px">Your MCP server says it’s up. Can Claude connect to it?</h1>
+<p class="hero-in d1" style="margin: 22px 0 0; font-size: 18px; line-height: 1.6; color: #5B636B; max-width: 500px; letter-spacing: -0.01em">Toolbeat sends the same handshake Claude, ChatGPT and Cursor send, then shows you the exact step where it breaks.</p>
+<form class="hero-in d2" onSubmit="{{runCheck}}" style="margin-top: 32px; display: flex; gap: 8px; flex-wrap: wrap; max-width: 520px; padding: 6px; background: #FFFFFF; border: 1px solid #E3E5E7; border-radius: 14px; box-shadow: 0 1px 2px rgba(14,17,20,.04), 0 8px 24px -12px rgba(14,17,20,.12)">
+<label for="server-url" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">MCP server address</label>
+<input id="server-url" type="url" value="{{url}}" onChange="{{setUrl}}" placeholder="https://mcp.yourcompany.com/mcp" style="flex: 1 1 260px; min-width: 0; height: 46px; box-sizing: border-box; padding: 0 14px; background: transparent; border: 1px solid transparent; border-radius: 10px; color: #0E1114; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 14px">
+<button type="submit" class="press" style="flex: 0 0 auto; height: 46px; padding: 0 20px; background: #0E1114; color: #FFFFFF; border: 0; border-radius: 10px; font-family: Geist, sans-serif; font-weight: 500; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px">
+<sc-if value="{{checking}}" hint-placeholder-val="{{ false }}">
+<svg class="spin" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="rgba(255,255,255,.25)" stroke-width="2"></circle><path d="M14.5 8A6.5 6.5 0 0 0 8 1.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path></svg>
+</sc-if>
+<span>{{buttonLabel}}</span>
+</button>
+</form>
+<p class="hero-in d3" style="margin: 14px 0 0 4px; font-size: 13px; color: #8A9199">Free. One public request. No tools are called and nothing is stored.</p>
+</div>
+
+<div class="hero-in d2" style="flex: 1 1 440px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E5E7; border-radius: 18px; box-shadow: 0 1px 2px rgba(14,17,20,.04), 0 24px 48px -24px rgba(14,17,20,.18); overflow: hidden">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #F0F1F2">
+<div style="display: flex; align-items: center; gap: 10px; min-width: 0">
+<span style="position: relative; width: 8px; height: 8px; flex: 0 0 auto">
+<sc-if value="{{checking}}" hint-placeholder-val="{{ false }}"><span class="ping" style="position: absolute; inset: 0; border-radius: 50%; background: #8A9199"></span></sc-if>
+<span style="position: absolute; inset: 0; border-radius: 50%; background: {{dotColor}}"></span>
+</span>
+<span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; color: #3D444B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{checkedUrl}}</span>
+</div>
+<span style="font-size: 12px; color: #8A9199; flex: 0 0 auto">Sample run</span>
+</div>
+<div style="padding: 8px 0; min-height: 268px">
+<sc-for list="{{visibleSteps}}" as="s" hint-placeholder-count="5">
+<div class="row-in" style="display: flex; gap: 14px; align-items: flex-start; padding: 12px 18px">
+<span style="flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: {{s.bg}}; margin-top: 1px">
+<sc-if value="{{s.pass}}" hint-placeholder-val="{{ true }}"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" role="img" aria-label="Passed"><path d="M2.5 6.3 5 8.7l4.5-5.2" stroke="#0F7C70" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>
+<sc-if value="{{s.fail}}" hint-placeholder-val="{{ false }}"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" role="img" aria-label="Failed"><path d="M3.5 3.5l5 5M8.5 3.5l-5 5" stroke="#B4441C" stroke-width="1.8" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{s.skip}}" hint-placeholder-val="{{ false }}"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" role="img" aria-label="Skipped"><path d="M3.5 6h5" stroke="#8A9199" stroke-width="1.8" stroke-linecap="round"></path></svg></sc-if>
+</span>
+<div style="flex: 1 1 auto; min-width: 0">
+<div style="display: flex; justify-content: space-between; gap: 12px; align-items: baseline">
+<span style="font-size: 14.5px; font-weight: 500; color: {{s.titleColor}}; letter-spacing: -0.01em">{{s.name}}</span>
+<span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; color: #8A9199; flex: 0 0 auto">{{s.meta}}</span>
+</div>
+<div style="font-size: 13.5px; color: #5B636B; margin-top: 2px">{{s.detail}}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<div class="row-in" style="margin: 0 10px 10px; padding: 14px 16px; border-radius: 12px; background: #FBF1EC; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+<div style="min-width: 0">
+<div style="font-weight: 600; font-size: 14.5px; color: #7A2E12; letter-spacing: -0.01em">AI clients can’t connect</div>
+<div style="font-size: 13px; color: #8F4A2C">A regular uptime check would still show this server as up.</div>
+</div>
+<a href="#alerts" class="press" style="font-size: 13.5px; font-weight: 500; text-decoration: none; padding: 8px 12px; border-radius: 8px; background: #0E1114; color: #FFFFFF; white-space: nowrap">Alert me next time</a>
+</div>
+</sc-if>
+</div>
+</section>
+
+<section id="why" style="padding: 24px 0 112px">
+<h2 style="margin: 0; font-weight: 600; font-size: clamp(30px, 3.6vw, 40px); line-height: 1.1; letter-spacing: -0.035em; max-width: 620px">A ping and a handshake see the same server very differently.</h2>
+<p style="margin: 16px 0 40px; font-size: 17px; color: #5B636B; max-width: 560px">Uptime monitors only ask whether a URL answers. MCP clients need a real MCP response, so a server can pass every ping and still fail every assistant.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<div style="background: #FFFFFF; border: 1px solid #E3E5E7; border-radius: 16px; padding: 24px">
+<div style="font-size: 14px; color: #5B636B; margin-bottom: 18px">Regular uptime monitor</div>
+<div style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.9; color: #3D444B; background: #F6F7F7; border-radius: 10px; padding: 14px 16px">GET /mcp<br>200 OK  text/html</div>
+<div style="display: flex; align-items: center; gap: 8px; margin-top: 18px; font-weight: 500; color: #0F7C70"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#E4F3EF"></circle><path d="M4.8 8.3 7 10.4l4.2-4.8" stroke="#0F7C70" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Shows the server as up</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E3E5E7; border-radius: 16px; padding: 24px">
+<div style="font-size: 14px; color: #5B636B; margin-bottom: 18px">Toolbeat</div>
+<div style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.9; color: #3D444B; background: #F6F7F7; border-radius: 10px; padding: 14px 16px">POST /mcp  initialize<br>expected JSON-RPC, got HTML</div>
+<div style="display: flex; align-items: center; gap: 8px; margin-top: 18px; font-weight: 500; color: #B4441C"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#FBEAE2"></circle><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" stroke="#B4441C" stroke-width="1.6" stroke-linecap="round"></path></svg>Catches the broken handshake</div>
+</div>
+</div>
+<p style="margin: 20px 0 0; font-size: 14px; color: #8A9199; max-width: 560px">For servers behind a sign-in, Toolbeat also checks that clients get the 401 and sign-in details they need to start OAuth.</p>
+</section>
+
+<section style="padding: 0 0 112px; display: flex; flex-wrap: wrap; gap: 56px; align-items: flex-start">
+<div style="flex: 1 1 340px; min-width: 0">
+<h2 style="margin: 0; font-weight: 600; font-size: clamp(30px, 3.6vw, 40px); line-height: 1.1; letter-spacing: -0.035em">1,900 company MCP servers were broken on Nov 22.</h2>
+<p style="margin: 16px 0 0; font-size: 17px; color: #5B636B">We checked all 29,439 company-owned remote servers in the official MCP Registry. 6.5% failed. When we re-checked about 1,250 of them 10 to 20 minutes later, 97% were still down.</p>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding-top: 6px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="5">
+<div>
+<div style="display: flex; justify-content: space-between; gap: 12px; font-size: 14px; margin-bottom: 6px"><span style="color: #3D444B">{{b.label}}</span><span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; color: #0E1114">{{b.count}}</span></div>
+<div style="height: 8px; background: #EEF0F1; border-radius: 999px; overflow: hidden"><div style="height: 100%; width: {{b.width}}; background: #0E1114; border-radius: 999px"></div></div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section id="alerts" style="padding: 0 0 96px">
+<div style="background: #0E1114; color: #FFFFFF; border-radius: 24px; padding: clamp(32px, 6vw, 64px); display: flex; flex-wrap: wrap; gap: 32px; align-items: center; justify-content: space-between">
+<div style="flex: 1 1 360px; min-width: 0">
+<h2 style="margin: 0; font-weight: 600; font-size: clamp(28px, 3.4vw, 38px); line-height: 1.1; letter-spacing: -0.035em">Find out before your users do.</h2>
+<p style="margin: 14px 0 0; font-size: 16px; color: #A6ADB4; max-width: 440px">Toolbeat will run this check around the clock and email you the moment a handshake fails. Join the waitlist for early access.</p>
+</div>
+<div style="flex: 1 1 360px; min-width: 0">
+<sc-if value="{{notJoined}}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{join}}" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 6px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px">
+<label for="waitlist-email" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Work email</label>
+<input id="waitlist-email" type="email" value="{{email}}" onChange="{{setEmail}}" placeholder="you@company.com" style="flex: 1 1 200px; min-width: 0; height: 46px; box-sizing: border-box; padding: 0 14px; background: transparent; border: 1px solid transparent; border-radius: 10px; color: #FFFFFF; font-family: Geist, sans-serif; font-size: 15px">
+<button type="submit" class="press" style="flex: 0 0 auto; height: 46px; padding: 0 20px; background: #FFFFFF; color: #0E1114; border: 0; border-radius: 10px; font-family: Geist, sans-serif; font-weight: 500; font-size: 15px; cursor: pointer">Join waitlist</button>
+</form>
+</sc-if>
+<sc-if value="{{joined}}" hint-placeholder-val="{{ false }}">
+<div class="row-in" role="status" style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: #FFFFFF"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#5FD3C1"></circle><path d="M6 10.3 8.6 13 14 7" stroke="#0E1114" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>You’re on the list. We’ll email {{email}} when early access opens.</span></div>
+</sc-if>
+</div>
+</div>
+</section>
+
+<footer style="border-top: 1px solid #ECEDEE; padding: 24px 0 40px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13px; color: #8A9199">
+<span>toolbeat.tech</span>
+<span>Not affiliated with Anthropic or the MCP project.</span>
+</footer>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1960}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { url: '', checkedUrl: 'https://mcp.example.com/mcp', shown: 0, status: 'idle', email: '', joined: false };
+    this.timers = [];
+  }
+  componentDidMount() { this.play('https://mcp.example.com/mcp'); }
+  componentWillUnmount() { this.timers.forEach(clearTimeout); }
+  play(u) {
+    this.timers.forEach(clearTimeout);
+    this.timers = [];
+    this.setState({ status: 'checking', shown: 0, checkedUrl: u });
+    const delays = [450, 800, 1350, 1650, 1900];
+    delays.forEach((d, i) => this.timers.push(setTimeout(() => this.setState({ shown: i + 1 }), d)));
+    this.timers.push(setTimeout(() => this.setState({ status: 'done' }), 2200));
+  }
+  renderVals() {
+    const s = this.state;
+    let host = 'mcp.example.com';
+    try { host = new URL(s.checkedUrl).hostname; } catch (e) {}
+    const steps = [
+      { name: 'Resolve ' + host, meta: '14 ms', detail: 'The domain points to a live server.', kind: 'pass' },
+      { name: 'Secure connection', meta: '41 ms', detail: 'TLS certificate matches the domain.', kind: 'pass' },
+      { name: 'MCP handshake', meta: '200 text/html', detail: 'Got a regular web page instead of an MCP response.', kind: 'fail' },
+      { name: 'Sign-in (OAuth)', meta: 'skipped', detail: 'Needs a working handshake first.', kind: 'skip' },
+      { name: 'Tool list', meta: 'skipped', detail: 'Needs a working handshake first.', kind: 'skip' }
+    ].map((x) => ({
+      ...x,
+      pass: x.kind === 'pass', fail: x.kind === 'fail', skip: x.kind === 'skip',
+      bg: x.kind === 'pass' ? '#E4F3EF' : x.kind === 'fail' ? '#FBEAE2' : '#F0F1F2',
+      titleColor: x.kind === 'skip' ? '#8A9199' : '#0E1114'
+    }));
+    const data = [["Can't connect at all", 708], ['404 Not Found', 584], ['Server error (5xx)', 437], ["Responds, but not with MCP", 126], ['Connects, then times out', 45]];
+    const bars = data.map(([label, n]) => ({ label: label, count: n.toLocaleString('en-US'), width: Math.round(n / 708 * 100) + '%' }));
+    const checking = s.status === 'checking';
+    return {
+      url: s.url, email: s.email, checkedUrl: s.checkedUrl,
+      visibleSteps: steps.slice(0, s.shown),
+      checking: checking, done: s.status === 'done',
+      dotColor: checking ? '#8A9199' : s.status === 'done' ? '#D9622B' : '#C9CDD1',
+      buttonLabel: checking ? 'Checking' : 'Check server',
+      bars: bars,
+      notJoined: !s.joined, joined: s.joined,
+      setUrl: (e) => this.setState({ url: e.target.value }),
+      setEmail: (e) => this.setState({ email: e.target.value }),
+      runCheck: (e) => { e.preventDefault(); this.play((this.state.url || '').trim() || 'https://mcp.example.com/mcp'); },
+      join: (e) => { e.preventDefault(); if ((this.state.email || '').indexOf('@') > 0) this.setState({ joined: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
