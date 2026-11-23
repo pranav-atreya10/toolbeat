@@ -1,4 +1,5 @@
 import { Checker } from "@/components/checker";
+import { HeroNetwork } from "@/components/hero-network";
 import { WaitlistForm } from "@/components/waitlist-form";
 
 /** Failures from the Nov 22, 2026 registry scan (docs/RESEARCH.md). */
@@ -15,7 +16,8 @@ export default function Home() {
   return (
     <main id="top" className="mx-auto max-w-[1120px] px-4 sm:px-6">
       {/* Hero + live checker */}
-      <section className="flex flex-wrap items-center gap-14 pt-16 pb-20 sm:pt-24 sm:pb-[104px]">
+      <section className="relative isolate flex flex-wrap items-center gap-14 pt-16 pb-20 sm:pt-24 sm:pb-[104px]">
+        <HeroNetwork />
         <Checker />
       </section>
 

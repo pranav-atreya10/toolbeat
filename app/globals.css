@@ -253,3 +253,56 @@ input::placeholder {
   padding: 0;
   font-size: inherit;
 }
+
+/* ── Hero background: server network ─────────────────────────────── */
+body {
+  /* The network is full-width; never let it cause sideways scrolling. */
+  overflow-x: clip;
+}
+.hero-network {
+  /* Fade out toward the edges so it never competes with the content. */
+  -webkit-mask-image: radial-gradient(ellipse 62% 70% at 50% 48%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 62% 70% at 50% 48%, #000 35%, transparent 100%);
+  animation: fade-in 1200ms var(--ease-out) 300ms both;
+}
+@keyframes net-glow {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  12% {
+    opacity: 0.22;
+    transform: scale(1);
+  }
+  30% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+.net-glow {
+  opacity: 0;
+  animation: net-glow 8.5s var(--ease-out) infinite;
+}
+.net-broken {
+  opacity: 0;
+  animation: net-glow 13s var(--ease-out) 5s infinite;
+}
+.hero-network[data-paused="true"] .net-glow,
+.hero-network[data-paused="true"] .net-broken {
+  animation-play-state: paused;
+}
+@media (max-width: 767px) {
+  /* On phones the hero is stacked and busy, so keep the network fainter. */
+  .hero-network {
+    opacity: 0.6;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Still network only: no pulses, no glows. */
+  .net-pulses,
+  .net-glow,
+  .net-broken {
+    display: none;
+  }
+}
