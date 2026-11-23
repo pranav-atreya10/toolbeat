@@ -56,6 +56,10 @@ export default function SafetyDoc() {
         The free checker doesn’t store your URL or your result. We only keep daily totals of how many checks passed,
         warned or failed.
       </p>
+      <p>
+        If you join the waitlist, we store your email address, which form you used, and when. We only use it to tell
+        you when early access opens.
+      </p>
     </DocsPage>
   );
 }

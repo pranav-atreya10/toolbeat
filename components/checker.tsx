@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import type { CheckResult, StepResult, StepStatus } from "@/lib/checks/types";
 import { cn } from "@/lib/utils";
+import { WaitlistForm } from "@/components/waitlist-form";
 
 const SAMPLE_URL = "https://mcp.example.com/mcp";
 
@@ -339,6 +340,7 @@ function Verdict({
   summary: string;
   isSample: boolean;
 }) {
+  const [asking, setAsking] = useState(false);
   const styles = {
     fail: { box: "bg-[#FBF1EC]", title: "text-[#7A2E12]", body: "text-[#8F4A2C]" },
     warn: { box: "bg-[#FBF5E6]", title: "text-[#5E4100]", body: "text-[#7A5A12]" },
@@ -366,13 +368,23 @@ function Verdict({
         <div className={cn("text-[14.5px] font-semibold tracking-[-0.01em]", styles.title)}>{summary}</div>
         <div className={cn("text-[13px]", styles.body)}>{body}</div>
       </div>
-      {verdict !== "rate_limited" && (
-        <Link
-          href="/#alerts"
-          className="press rounded-lg bg-ink px-3 py-2 text-[13.5px] font-medium whitespace-nowrap text-white"
+      {verdict !== "rate_limited" && !asking && (
+        <button
+          type="button"
+          onClick={() => setAsking(true)}
+          aria-expanded={asking}
+          className="press cursor-pointer rounded-lg bg-ink px-3 py-2 text-[13.5px] font-medium whitespace-nowrap text-white"
         >
           {verdict === "pass" ? "Monitor this server" : "Alert me next time"}
-        </Link>
+        </button>
+      )}
+      {asking && (
+        <div className="row-in w-full">
+          <p className={cn("mb-2 text-[13px]", styles.body)}>
+            Monitoring is in early access. Join the waitlist and we’ll email you when it opens.
+          </p>
+          <WaitlistForm source="result" tone="light" autoFocus />
+        </div>
       )}
     </div>
   );

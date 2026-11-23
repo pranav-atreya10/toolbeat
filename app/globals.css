@@ -71,6 +71,10 @@ input::placeholder {
   outline: 2px solid var(--signal);
   outline-offset: 3px;
 }
+/* Text boxes show focus with their surrounding form's ring instead. */
+input:focus-visible {
+  outline: none;
+}
 
 /* Buttons shrink a little when pressed */
 .press {

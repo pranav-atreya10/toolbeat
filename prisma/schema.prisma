@@ -1,0 +1,22 @@
+// The database layout. After changing this file, run:
+//   npx prisma migrate dev --name what-you-changed
+// See docs/ARCHITECTURE.md for the full plan (more tables come in Milestone 3).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// One person who joined the waitlist.
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  /// Always stored in lowercase, so the same address can't sign up twice.
+  email     String   @unique
+  /// Which form they used: "hero" | "result" | "footer"
+  source    String?
+  createdAt DateTime @default(now())
+}

@@ -105,6 +105,27 @@ export function clientIp(headers: Headers): string {
   return headers.get("x-real-ip") ?? "unknown";
 }
 
+// ── Waitlist sign-ups ───────────────────────────────────────────────
+const WAITLIST_PER_IP = 5;
+let waitlistLimiter: Ratelimit | null = null;
+
+/** Limit waitlist sign-ups to a few per hour per visitor (stops spam scripts). */
+export async function checkWaitlistLimit(ip: string): Promise<LimitResult> {
+  const r = getRedis();
+  if (r) {
+    waitlistLimiter ??= new Ratelimit({
+      redis: r,
+      limiter: Ratelimit.slidingWindow(WAITLIST_PER_IP, "1 h"),
+      prefix: "tb:rl:waitlist",
+    });
+    const res = await waitlistLimiter.limit(ip);
+    return res.success
+      ? { ok: true, remaining: res.remaining, retryAfter: 0 }
+      : { ok: false, remaining: 0, retryAfter: secondsUntil(res.reset), which: "ip" };
+  }
+  return memoryLimit(`waitlist:${ip}`, WAITLIST_PER_IP);
+}
+
 /** For tests: forget all in-memory counts. */
 export function resetMemoryLimits() {
   memory.clear();
