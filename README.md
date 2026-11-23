@@ -79,5 +79,7 @@ LIVE=1 npm test
 1. Import this repo in Vercel.
 2. In Vercel's environment variables, add `DATABASE_URL` (Neon), `ADMIN_PASSWORD`, and the two Upstash keys
    (`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`) from a free Upstash Redis database. See `.env.example`.
-   Each deploy updates the database tables automatically (the `vercel-build` script).
+   Tick **Production** and **Preview** for each one, so branch deploys can see them too.
+   Each deploy updates the database tables automatically (`scripts/vercel-build.mjs`). If `DATABASE_URL`
+   is missing, the site still deploys, but the waitlist can't save emails.
 3. Add the `toolbeat.tech` domain in the Vercel project settings.
